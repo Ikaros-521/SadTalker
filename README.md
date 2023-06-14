@@ -77,7 +77,7 @@ https://user-images.githubusercontent.com/4397546/231495639-5d4bb925-ea64-4a36-a
 
 
 
-## ⚙️ 1. Installation.
+## ⚙️ 1. 安装 Installation.
 
 Tutorials from communities: [中文windows教程](https://www.bilibili.com/video/BV1Dc411W7V6/) | [日本語コース](https://br-d.fanbox.cc/posts/5685086?utm_campaign=manage_post_page&utm_medium=share&utm_source=twitter) 
 
@@ -112,7 +112,15 @@ Tutorials from communities: [中文windows教程](https://www.bilibili.com/video
 3. Install `ffmpeg`, following [this instruction](https://www.wikihow.com/Install-FFmpeg-on-Windows) (OR using `scoop install ffmpeg` via [scoop](https://scoop.sh/)).
 4. Download our SadTalker repository, for example by running `git clone https://github.com/Winfredy/SadTalker.git`.
 5. Download the `checkpoint` and `gfpgan` [below↓](https://github.com/Winfredy/SadTalker#-2-download-trained-models).
-5. Run `start.bat` from Windows Explorer as normal, non-administrator, user, a gradio WebUI demo will be started.
+6. Run `start.bat` from Windows Explorer as normal, non-administrator, user, a gradio WebUI demo will be started.
+
+第6步会创建虚拟环境安装依赖。那我这以本地conda环境演示。  
+```
+conda create -n ai python=3.10
+# 单独安装，requirement里版本号删了，指定版本有编译问题，麻烦。
+pip install scipy numpy
+pip install --use-pep517 -r requirements3d.txt
+```
 
 ### Macbook:
 
@@ -233,6 +241,56 @@ If you find our work useful in your research, please consider citing:
 }
 ```
 
+## 实测
+显卡：RTX4070 12GB  
+1345*925像素的人物头像照片，音频为6s的wav文件。  
+```
+pose style=0
+face model resolution=256
+preprocess=crop
+batch size in generation=2
+```
+合成256*256的视频耗时25s左右。  
+batch size=10时，合成耗时19s左右。  
+ 
+
+## FAQ
+
+### 1.RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False
+```
+  File "D:\Miniconda\envs\ai\lib\site-packages\torch\serialization.py", line 166, in validate_cuda_device
+    raise RuntimeError('Attempting to deserialize object on a CUDA '
+RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False. If you are running on a CPU-only machine, please use torch.load with map_location=torch.device('cpu') to map your storages to the CPU.
+```
+安装配套的torch环境`conda install pytorch==2.0.0 torchvision==0.15.0 torchaudio==2.0.0 pytorch-cuda=11.8 -c pytorch -c nvidia`  
+
+
+### 2.ImportError: cannot import name 'COMMON_SAFE_ASCII_CHARACTERS' from 'charset_normalizer.constant' 
+```
+  File "D:\Miniconda\envs\ai\lib\site-packages\charset_normalizer\api.py", line 10, in <module>
+    from charset_normalizer.md import mess_ratio
+  File "charset_normalizer\md.py", line 5, in <module>
+ImportError: cannot import name 'COMMON_SAFE_ASCII_CHARACTERS' from 'charset_normalizer.constant' (D:\Miniconda\envs\ai\lib\site-packages\charset_normalizer\constant.py)
+```
+安装`pip install charset_normalizer==3.1.0`  
+
+### 3.FileNotFoundError: [Errno 2] No such file or directory: '6bc7cc8f-9d9a-4b57-9a36-440f902514e4.mp4'
+```
+'ffmpeg' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+Traceback (most recent call last):
+  File "D:\Miniconda\envs\ai\lib\shutil.py", line 816, in move
+    os.rename(src, real_dst)
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。: '6bc7cc8f-9d9a-4b57-9a36-440f902514e4.mp4' -> './results/79958819-2bd2-4b8c-a46a-d92c36bd1723\\image##6100_ikaros-0-100.mp4'
+
+During handling of the above exception, another exception occurred:
+
+.......
+
+  File "D:\Miniconda\envs\ai\lib\shutil.py", line 254, in copyfile
+    with open(src, 'rb') as fsrc:
+FileNotFoundError: [Errno 2] No such file or directory: '6bc7cc8f-9d9a-4b57-9a36-440f902514e4.mp4'
+```
 
 
 ## 💗 Acknowledgements
