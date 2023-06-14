@@ -252,6 +252,8 @@ batch size in generation=2
 ```
 合成256*256的视频耗时25s左右。  
 batch size=10时，合成耗时19s左右。  
+
+512*512，batch size=3时，70s左右。（高了就爆显存了）  
  
 
 ## FAQ
@@ -262,6 +264,8 @@ batch size=10时，合成耗时19s左右。
     raise RuntimeError('Attempting to deserialize object on a CUDA '
 RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.is_available() is False. If you are running on a CPU-only machine, please use torch.load with map_location=torch.device('cpu') to map your storages to the CPU.
 ```
+
+解决方案：  
 安装配套的torch环境`conda install pytorch==2.0.0 torchvision==0.15.0 torchaudio==2.0.0 pytorch-cuda=11.8 -c pytorch -c nvidia`  
 
 
@@ -272,6 +276,8 @@ RuntimeError: Attempting to deserialize object on a CUDA device but torch.cuda.i
   File "charset_normalizer\md.py", line 5, in <module>
 ImportError: cannot import name 'COMMON_SAFE_ASCII_CHARACTERS' from 'charset_normalizer.constant' (D:\Miniconda\envs\ai\lib\site-packages\charset_normalizer\constant.py)
 ```
+
+解决方案：  
 安装`pip install charset_normalizer==3.1.0`  
 
 ### 3.FileNotFoundError: [Errno 2] No such file or directory: '6bc7cc8f-9d9a-4b57-9a36-440f902514e4.mp4'
@@ -292,6 +298,16 @@ During handling of the above exception, another exception occurred:
 FileNotFoundError: [Errno 2] No such file or directory: '6bc7cc8f-9d9a-4b57-9a36-440f902514e4.mp4'
 ```
 
+解决方案： 
+安装ffmpeg，并配置环境变量（bin目录）  
+
+### 4.torch.cuda.OutOfMemoryError: CUDA out of memory
+```
+torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.25 GiB (GPU 0; 11.99 GiB total capacity; 9.02 GiB already allocated; 0 bytes free; 11.19 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+```
+
+解决方案：  
+降低生成的视频大小（face model resolution），降低batch_size  
 
 ## 💗 Acknowledgements
 
